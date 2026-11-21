@@ -1,193 +1,116 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praktikum Rakit Kabel LAN - Supabase & Vercel</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <title>Tutorial Rakit Kabel LAN - Praktik TKJ</title>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
-    <div class="max-w-5xl mx-auto">
-        <header class="mb-8 border-b border-slate-800 pb-4 text-center">
-            <h1 class="text-3xl font-bold text-cyan-400">🌐 Sistem Manajemen Praktikum Rakit Kabel LAN</h1>
-            <p class="text-slate-400 text-sm mt-1">Standar T568A & T568B (Straight-Through vs Crossover)</p>
-        </header>
+<body>
 
-        <!-- Informasi Panduan Warna -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h2 class="text-lg font-semibold text-cyan-300 mb-2">Standar T568B (Paling Umum)</h2>
-                <ol class="text-xs space-y-1 text-slate-300 list-decimal list-inside font-mono">
-                    <li class="text-orange-400">Putih-Oranye</li>
-                    <li class="text-orange-600">Oranye</li>
-                    <li class="text-green-400">Putih-Hijau</li>
-                    <li class="text-blue-500">Biru</li>
-                    <li class="text-blue-300">Putih-Biru</li>
-                    <li class="text-green-600">Hijau</li>
-                    <li class="text-amber-700">Putih-Coklat</li>
-                    <li class="text-amber-900">Coklat</li>
-                </ol>
-            </div>
-            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h2 class="text-lg font-semibold text-cyan-300 mb-2">Standar T568A</h2>
-                <ol class="text-xs space-y-1 text-slate-300 list-decimal list-inside font-mono">
-                    <li class="text-green-400">Putih-Hijau</li>
-                    <li class="text-green-600">Hijau</li>
-                    <li class="text-orange-400">Putih-Oranye</li>
-                    <li class="text-blue-500">Biru</li>
-                    <li class="text-blue-300">Putih-Biru</li>
-                    <li class="text-orange-600">Oranye</li>
-                    <li class="text-amber-700">Putih-Coklat</li>
-                    <li class="text-amber-900">Coklat</li>
-                </ol>
-            </div>
-        </div>
+  <header>
+    <h1>Tutorial Praktik TKJ: Merakit Kabel LAN (Straight T568B)</h1>
+    <p>Panduan crimping kabel UTP dengan konektor RJ45 untuk jaringan lokal.</p>
+    <hr>
+  </header>
 
-        <!-- Form Input Nilai / Hasil Praktik -->
-        <div class="bg-slate-900 p-6 rounded-xl shadow-lg mb-8 border border-slate-800">
-            <h2 class="text-lg font-semibold mb-4 text-cyan-300">Catat Hasil Pengujian LAN Tester</h2>
-            <form id="lanForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Nama Praktikan / Siswa</label>
-                    <input type="text" id="namaPraktikan" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Jenis Kabel</label>
-                    <select id="jenisKabel" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
-                        <option value="Straight-Through">Straight-Through (PC ke Switch/Hub)</option>
-                        <option value="Crossover">Crossover (PC ke PC / Hub ke Hub)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Standar Urutan</label>
-                    <select id="standarUrutan" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
-                        <option value="T568B - T568B">T568B - T568B (Straight)</option>
-                        <option value="T568A - T568B">T568A - T568B (Cross)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Status LAN Tester</label>
-                    <select id="statusTester" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
-                        <option value="Normal (1-8 Nyala)">Normal (Lampu 1-8 Menyala Berurutan)</option>
-                        <option value="Cross-Over Match">Cross-Over Match (Sesuai Skema)</option>
-                        <option value="Error / Ada Jalur Putus">Error / Ada Jalur Putus</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Nilai Praktik (0-100)</label>
-                    <input type="number" id="nilaiPraktik" min="0" max="100" value="90" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 px-4 rounded text-sm transition">Simpan ke Cloud</button>
-                </div>
-            </form>
-        </div>
+  <section>
+    <h2>Alat dan Bahan</h2>
+    <ul>
+      <li>Kabel UTP (Cat5e / Cat6)</li>
+      <li>2 Buah Konektor RJ45</li>
+      <li>Tang Crimping</li>
+      <li>LAN Tester</li>
+    </ul>
+  </section>
 
-        <!-- Tabel Data Praktikum -->
-        <div class="bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-800 overflow-x-auto">
-            <h2 class="text-lg font-semibold mb-4 text-cyan-300">Riwayat Penilaian Praktikum</h2>
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase">
-                        <th class="p-3">Nama</th>
-                        <th class="p-3">Jenis Kabel</th>
-                        <th class="p-3">Standar</th>
-                        <th class="p-3">Status Tester</th>
-                        <th class="p-3">Nilai</th>
-                        <th class="p-3">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="lanTableBody" class="text-sm divide-y divide-slate-800">
-                    <!-- Data dimuat via JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+  <section>
+    <h2>Langkah-Langkah Crimping</h2>
+    <ol>
+      <li>Kupas kulit luar kabel UTP sepanjang ±2 cm menggunakan pisau pada tang crimping.</li>
+      <li>Pisahkan lilitan kabel dan urutkan warna sesuai standar <b>EIA/TIA 568B</b> (kedua ujung sama):</li>
+    </ol>
+    <pre>
+1. Putih Oranye
+2. Oranye
+3. Putih Hijau
+4. Biru
+5. Putih Biru
+6. Hijau
+7. Putih Cokelat
+8. Cokelat
+    </pre>
+    <ol start="3">
+      <li>Potong ujung tembaga secara rata hingga panjang tersisa ±1,2 cm.</li>
+      <li>Masukkan kabel ke dalam konektor RJ45 (pin kuningan menghadap ke atas) sampai menyentuh ujung dalam konektor.</li>
+      <li>Jepit konektor menggunakan tang crimping hingga terdengar bunyi <i>"klik"</i>.</li>
+      <li>Uji kedua ujung kabel memakai <b>LAN Tester</b>. Pastikan lampu indikator 1 sampai 8 menyala secara berurutan.</li>
+    </ol>
+  </section>
 
-    <script>
-        // Konfigurasi Supabase (Ganti dengan URL & Anon Key dari Project Settings Supabase Anda)
-        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <hr>
 
-        async function fetchLanData() {
-            const { data, error } = await supabaseClient
-                .from('perakitan_lan')
-                .select('*')
-                .order('id', { ascending: false });
+  <section>
+    <h2>Form Pertanyaan / Komentar</h2>
+    <form id="formKomentar">
+      <label>Nama Siswa:</label><br>
+      <input type="text" id="nama" placeholder="Masukkan nama" required><br><br>
+      <label>Pertanyaan / Catatan:</label><br>
+      <textarea id="pesan" rows="3" placeholder="Tulis pertanyaan..." required></textarea><br><br>
+      <button type="submit">Kirim</button>
+    </form>
+    <p id="status"></p>
 
-            const tableBody = document.getElementById('lanTableBody');
-            tableBody.innerHTML = '';
+    <h3>Daftar Komentar Masuk:</h3>
+    <ul id="daftarKomentar">
+      <li>Memuat komentar...</li>
+    </ul>
+  </section>
 
-            if (error) {
-                console.error('Gagal mengambil data:', error);
-                return;
-            }
+  <footer>
+    <hr>
+    <p>&copy; 2026 Modul Praktik TKJ</p>
+  </footer>
 
-            if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Belum ada data praktikum tersimpan.</td></tr>`;
-                return;
-            }
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'URL_SUPABASE_KAMU';
+    const supabaseKey = 'ANON_KEY_SUPABASE_KAMU';
+    const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="p-3 font-medium text-cyan-400">${item.nama_praktikan}</td>
-                    <td class="p-3 text-slate-300">${item.jenis_kabel}</td>
-                    <td class="p-3 text-slate-400 text-xs font-mono">${item.standar_urutan}</td>
-                    <td class="p-3 text-emerald-400 text-xs">${item.status_tester}</td>
-                    <td class="p-3 font-bold text-amber-300">${item.nilai}</td>
-                    <td class="p-3">
-                        <button onclick="deleteData(${item.id})" class="bg-red-900/50 hover:bg-red-700 text-red-200 px-2 py-1 rounded text-xs transition">Hapus</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
+    async function muatKomentar() {
+      const daftarEl = document.getElementById('daftarKomentar');
+      const { data, error } = await db.from('komentar').select('*').order('id', { ascending: false });
 
-        document.getElementById('lanForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const nama_praktikan = document.getElementById('namaPraktikan').value;
-            const jenis_kabel = document.getElementById('jenisKabel').value;
-            const standar_urutan = document.getElementById('standarUrutan').value;
-            const status_tester = document.getElementById('statusTester').value;
-            const nilai = parseInt(document.getElementById('nilaiPraktik').value);
+      if (error) { daftarEl.innerHTML = '<li>Error: ' + error.message + '</li>'; return; }
+      if (data.length === 0) { daftarEl.innerHTML = '<li>Belum ada komentar.</li>'; return; }
 
-            const { error } = await supabaseClient
-                .from('perakitan_lan')
-                .insert([{ nama_praktikan, jenis_kabel, standar_urutan, status_tester, nilai }]);
+      daftarEl.innerHTML = '';
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<b>${item.nama}</b>: ${item.pesan}`;
+        daftarEl.appendChild(li);
+      });
+    }
 
-            if (error) {
-                alert('Gagal menyimpan data: ' + error.message);
-            } else {
-                alert('Data praktikum berhasil disimpan ke Cloud!');
-                document.getElementById('lanForm').reset();
-                fetchLanData();
-            }
-        });
+    document.getElementById('formKomentar').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const namaInput = document.getElementById('nama').value;
+      const pesanInput = document.getElementById('pesan').value;
+      const statusTeks = document.getElementById('status');
 
-        async function deleteData(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+      statusTeks.innerText = "Mengirim data...";
+      const { error } = await db.from('komentar').insert([{ nama: namaInput, pesan: pesanInput }]);
 
-            const { error } = await supabaseClient
-                .from('perakitan_lan')
-                .delete()
-                .eq('id', id);
+      if (error) {
+        statusTeks.innerText = "Gagal mengirim: " + error.message;
+      } else {
+        statusTeks.innerText = "Berhasil! Komentar tersimpan.";
+        document.getElementById('formKomentar').reset();
+        muatKomentar();
+      }
+    });
 
-            if (error) {
-                alert('Gagal menghapus: ' + error.message);
-            } else {
-                fetchLanData();
-            }
-        }
+    muatKomentar();
+  </script>
 
-        // Muat data saat halaman dibuka
-        fetchLanData();
-    </script>
 </body>
 </html>
