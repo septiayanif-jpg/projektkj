@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praktikum Rakit Kabel LAN - Supabase & Vercel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 border-b border-slate-800 pb-4 text-center">
+            <h1 class="text-3xl font-bold text-cyan-400">🌐 Sistem Manajemen Praktikum Rakit Kabel LAN</h1>
+            <p class="text-slate-400 text-sm mt-1">Standar T568A & T568B (Straight-Through vs Crossover)</p>
+        </header>
+
+        <!-- Informasi Panduan Warna -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+                <h2 class="text-lg font-semibold text-cyan-300 mb-2">Standar T568B (Paling Umum)</h2>
+                <ol class="text-xs space-y-1 text-slate-300 list-decimal list-inside font-mono">
+                    <li class="text-orange-400">Putih-Oranye</li>
+                    <li class="text-orange-600">Oranye</li>
+                    <li class="text-green-400">Putih-Hijau</li>
+                    <li class="text-blue-500">Biru</li>
+                    <li class="text-blue-300">Putih-Biru</li>
+                    <li class="text-green-600">Hijau</li>
+                    <li class="text-amber-700">Putih-Coklat</li>
+                    <li class="text-amber-900">Coklat</li>
+                </ol>
+            </div>
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+                <h2 class="text-lg font-semibold text-cyan-300 mb-2">Standar T568A</h2>
+                <ol class="text-xs space-y-1 text-slate-300 list-decimal list-inside font-mono">
+                    <li class="text-green-400">Putih-Hijau</li>
+                    <li class="text-green-600">Hijau</li>
+                    <li class="text-orange-400">Putih-Oranye</li>
+                    <li class="text-blue-500">Biru</li>
+                    <li class="text-blue-300">Putih-Biru</li>
+                    <li class="text-orange-600">Oranye</li>
+                    <li class="text-amber-700">Putih-Coklat</li>
+                    <li class="text-amber-900">Coklat</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Form Input Nilai / Hasil Praktik -->
+        <div class="bg-slate-900 p-6 rounded-xl shadow-lg mb-8 border border-slate-800">
+            <h2 class="text-lg font-semibold mb-4 text-cyan-300">Catat Hasil Pengujian LAN Tester</h2>
+            <form id="lanForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Nama Praktikan / Siswa</label>
+                    <input type="text" id="namaPraktikan" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Jenis Kabel</label>
+                    <select id="jenisKabel" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
+                        <option value="Straight-Through">Straight-Through (PC ke Switch/Hub)</option>
+                        <option value="Crossover">Crossover (PC ke PC / Hub ke Hub)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Standar Urutan</label>
+                    <select id="standarUrutan" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
+                        <option value="T568B - T568B">T568B - T568B (Straight)</option>
+                        <option value="T568A - T568B">T568A - T568B (Cross)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Status LAN Tester</label>
+                    <select id="statusTester" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
+                        <option value="Normal (1-8 Nyala)">Normal (Lampu 1-8 Menyala Berurutan)</option>
+                        <option value="Cross-Over Match">Cross-Over Match (Sesuai Skema)</option>
+                        <option value="Error / Ada Jalur Putus">Error / Ada Jalur Putus</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">Nilai Praktik (0-100)</label>
+                    <input type="number" id="nilaiPraktik" min="0" max="100" value="90" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:outline-none focus:border-cyan-400">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 px-4 rounded text-sm transition">Simpan ke Cloud</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabel Data Praktikum -->
+        <div class="bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-800 overflow-x-auto">
+            <h2 class="text-lg font-semibold mb-4 text-cyan-300">Riwayat Penilaian Praktikum</h2>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase">
+                        <th class="p-3">Nama</th>
+                        <th class="p-3">Jenis Kabel</th>
+                        <th class="p-3">Standar</th>
+                        <th class="p-3">Status Tester</th>
+                        <th class="p-3">Nilai</th>
+                        <th class="p-3">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="lanTableBody" class="text-sm divide-y divide-slate-800">
+                    <!-- Data dimuat via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Supabase (Ganti dengan URL & Anon Key dari Project Settings Supabase Anda)
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchLanData() {
+            const { data, error } = await supabaseClient
+                .from('perakitan_lan')
+                .select('*')
+                .order('id', { ascending: false });
+
+            const tableBody = document.getElementById('lanTableBody');
+            tableBody.innerHTML = '';
+
+            if (error) {
+                console.error('Gagal mengambil data:', error);
+                return;
+            }
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Belum ada data praktikum tersimpan.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3 font-medium text-cyan-400">${item.nama_praktikan}</td>
+                    <td class="p-3 text-slate-300">${item.jenis_kabel}</td>
+                    <td class="p-3 text-slate-400 text-xs font-mono">${item.standar_urutan}</td>
+                    <td class="p-3 text-emerald-400 text-xs">${item.status_tester}</td>
+                    <td class="p-3 font-bold text-amber-300">${item.nilai}</td>
+                    <td class="p-3">
+                        <button onclick="deleteData(${item.id})" class="bg-red-900/50 hover:bg-red-700 text-red-200 px-2 py-1 rounded text-xs transition">Hapus</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('lanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nama_praktikan = document.getElementById('namaPraktikan').value;
+            const jenis_kabel = document.getElementById('jenisKabel').value;
+            const standar_urutan = document.getElementById('standarUrutan').value;
+            const status_tester = document.getElementById('statusTester').value;
+            const nilai = parseInt(document.getElementById('nilaiPraktik').value);
+
+            const { error } = await supabaseClient
+                .from('perakitan_lan')
+                .insert([{ nama_praktikan, jenis_kabel, standar_urutan, status_tester, nilai }]);
+
+            if (error) {
+                alert('Gagal menyimpan data: ' + error.message);
+            } else {
+                alert('Data praktikum berhasil disimpan ke Cloud!');
+                document.getElementById('lanForm').reset();
+                fetchLanData();
+            }
+        });
+
+        async function deleteData(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+
+            const { error } = await supabaseClient
+                .from('perakitan_lan')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert('Gagal menghapus: ' + error.message);
+            } else {
+                fetchLanData();
+            }
+        }
+
+        // Muat data saat halaman dibuka
+        fetchLanData();
+    </script>
+</body>
+</html>
